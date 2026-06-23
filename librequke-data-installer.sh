@@ -16,4 +16,4 @@ cd ..
 rm -rf ./full
 rm -rf ./full.zip
 cd ..
-cd install-scripts/
+cd Debra-ports/
