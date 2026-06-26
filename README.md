@@ -22,6 +22,7 @@ sudo apt install build-essential git nasm libgl1-mesa-dev libsdl2-dev flac libfl
 Debra-Ports.sh
 ```
 ### How to Start compiling Windows binaries on Linux.
+NOTE: This is not updated.
 ```
 Debra-Ports-Windows.sh
 ```
