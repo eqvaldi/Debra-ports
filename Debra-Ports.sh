@@ -48,7 +48,7 @@ options=(1 "Dhewm3"
 	 15 "UZDoom (Doom,Heretic,Hexen)"
 	 16 "VoidSW (Shadow Warrior classic redux)"
 	 17 "EKen-Build (Ken Silverman's Build Engine Demo)"
-	 18 "Exit")
+	 18 "SeriousSamClassic TFE/TSE")
 
 choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 
@@ -254,7 +254,35 @@ do
           bash ./Debra-Ports.sh
             ;;
         18)
-          exit
+          git clone https://github.com/tx00100xt/SeriousSamClassic.git
+          cd ./SeriousSamClassic
+          
+          dialog --msgbox "Place Serious Sam TFE/TSE game data in ./.TEMP/SeriousSamClassic/SamTFE and TSE" 0 0
+          
+          cd SamTFE/
+          rm -f {*.exe,*.ex_,*.bmp,*.inx,*.hdr,*.bin,*.cab,*.ini,*.log}
+          rm -fr Bin
+          rm -fr Disk1 
+          rm -fr Tools.Win32
+          mkdir Bin
+          cd Sources
+          ./build-linux64.sh -DTFE=TRUE
+          cd ..
+          cd ..
+          cd SamTSE/
+          rm -f {*.exe,*.ex_,*.bmp,*.inx,*.hdr,*.bin,*.cab,*.ini,*.log}
+          rm -fr Bin
+          rm -fr Disk1 
+          rm -fr Tools.Win32
+          mkdir Bin
+          cd Sources
+          ./build-linux64.sh -DTFE=TRUE
+          cd ..
+          cd ..
+          cd ..
+          cd ..
+          mv ./.TEMP/SeriousSamClassic/SamT* ./Bin
+          bash ./Debra-Ports.sh
             ;;
 
     esac
