@@ -97,7 +97,7 @@ Description: Luanti sandbox engine bundled with backroomtest mod
  Luanti (formerly Minetest) is an infinite-world voxel sandbox 
  framework compiled with local dependencies, minetest_game assets, 
  and the custom liminal space Backroomtest environment tracking code.
- Automatically packaged on $(date).
+ Automatically packaged on $(date +%Y-%m-%d).
 EOF
 
 # 9. Build the final .deb package safely ensuring root ownership

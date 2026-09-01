@@ -65,7 +65,7 @@ Maintainer: EQLinux <https://github.com/eqvaldi>
 Depends: libsdl2-2.0-0, libgl1, libvpx9, libgtk-3-0 | libgtk2.0-0
 Description: EDuke32 engine port for Duke Nukem 3D
  EDuke32 is a feature-packed homebrew port of the classic 3D
- Realms game Duke Nukem 3D. Automatically packaged on $(date).
+ Realms game Duke Nukem 3D. Automatically packaged on $(date +%Y-%m-%d).
 EOF
 
 # 8. Build the final .deb package

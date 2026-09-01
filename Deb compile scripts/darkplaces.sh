@@ -71,7 +71,7 @@ Depends: libsdl2-2.0-0, libjpeg62-turbo, libpng16-16, libcurl4, libgl1
 Description: DarkPlaces Quake engine port
  DarkPlaces is an advanced, high-fidelity modification of the original
  Quake 1 engine featuring modern rendering and extended script support.
- Automatically packaged on $(date).
+ Automatically packaged on $(date +%Y-%m-%d).
 EOF
 
 # 8. Build the final .deb package safely ensuring root ownership

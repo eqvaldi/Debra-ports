@@ -80,7 +80,7 @@ Depends: libsdl2-2.0-0, libgl1, libopenal1, libcurl4
 Description: Yamagi Quake II engine source port (Development Build)
  Yamagi Quake II is an enhanced, incredibly stable client port of id 
  Software's classic Quake II. Built and packaged straight from master source.
- Automatically packaged on $(date).
+ Automatically packaged on $(date +%Y-%m-%d).
 EOF
 
 # 8. Build the final .deb package safely ensuring root ownership

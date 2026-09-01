@@ -68,7 +68,7 @@ Depends: libsdl2-2.0-0, libgl1, libvpx9, libgtk-3-0 | libgtk2.0-0
 Description: NBlood engine port for One Unit Whole Blood
  NBlood is a spectacular, reverse-engineered source port of the 
  classic 1997 game Blood built using advanced EDuke32 technologies.
- Automatically packaged on $(date).
+ Automatically packaged on $(date +%Y-%m-%d).
 EOF
 
 # 8. Build the final .deb package safely ensuring root ownership

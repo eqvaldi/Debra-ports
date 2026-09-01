@@ -83,7 +83,7 @@ Depends: libsdl2-2.0-0, libopenal1, libcurl4, libjpeg62-turbo, libgl1
 Description: ioquake3 engine port for Quake III Arena
  ioquake3 is the premier community-driven engine overhaul for id Software's 
  Quake III Arena, supporting modern 64-bit platforms, SDL2, and OpenAL.
- Automatically packaged on $(date).
+ Automatically packaged on $(date +%Y-%m-%d).
 EOF
 
 # 8. Build the final .deb package safely ensuring root ownership
