@@ -76,7 +76,7 @@ Section: games
 Priority: optional
 Architecture: ${ARCH}
 Maintainer: EQLinux <https://github.com/eqvaldi>
-Depends: libsdl2-2.0-0, libopenal1, libcurl4, libgl1-mesa-glx
+Depends: libsdl2-2.0-0, libopenal1, libcurl4, libgl1
 Description: dhewm3 engine port for Doom 3
  dhewm3 is a Doom 3 GPL source port optimized to work seamlessly
  on modern 64-bit systems using SDL2 and OpenAL.

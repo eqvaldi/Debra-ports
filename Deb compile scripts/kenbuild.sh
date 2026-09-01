@@ -67,7 +67,7 @@ Section: games
 Priority: optional
 Architecture: ${ARCH}
 Maintainer: EQLinux <https://github.com/eqvaldi>
-Depends: libsdl2-2.0-0, libflac8
+Depends: libsdl2-2.0-0, libgl1, libvpx9, libgtk-3-0 | libgtk2.0-0
 Description: KenBuild classic engine testing build based on EDuke32
  An optimized software-rendered build of Ken Silverman's legendary initial 
  Build Engine showcase world, compiled via modern EDuke32 libraries.

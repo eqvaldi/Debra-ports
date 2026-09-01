@@ -92,7 +92,7 @@ Section: games
 Priority: optional
 Architecture: ${ARCH}
 Maintainer: EQLinux <https://github.com/eqvaldi>
-Depends: libsdl2-2.0-0, libvorbisfile3, libmad0, libogg0
+Depends: libsdl2-2.0-0, libvorbisfile3, libmad0, libogg0, libgl1
 Description: LibreQuake standalone game built on QuakeSpasm
  This package provides a 100% free and open-source gaming configuration
  bundling the high-fidelity QuakeSpasm source port alongside the community 

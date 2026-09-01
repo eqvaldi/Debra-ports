@@ -75,8 +75,9 @@ Version: ${VERSION}
 Section: games
 Priority: optional
 Architecture: ${ARCH}
+Provides: doom-engine
 Maintainer: EQLinux <https://github.com/eqvaldi>
-Depends: libsdl2-2.0-0, libsdl2-image-2.0-0, libsdl2-mixer-2.0-0, libgl1-mesa-glx, libfluidsynth3, libportmidi0, libmad0
+Depends: libsdl2-2.0-0, libsdl2-image-2.0-0, libsdl2-mixer-2.0-0, libgl1, libfluidsynth3, libportmidi0, libmad0
 Description: dsda-doom advanced engine port for Doom, Heretic, and Hexen
  This is an advanced successor of prboom+ featuring extra tooling for 
  demo recording, in-game console scripting, full controller tracking, 

@@ -70,7 +70,7 @@ Section: games
 Priority: optional
 Architecture: ${ARCH}
 Maintainer: EQLinux <https://github.com/eqvaldi>
-Depends: libsdl2-2.0-0, libsdl2-net-2.0-0, libjpeg62-turbo, libpng16-16, zlib1g
+Depends: libsdl2-2.0-0, libsdl2-net-2.0-0, libjpeg62-turbo, libpng16-16, zlib1g, libgl1
 Description: ECWolf advanced engine port for Wolfenstein 3D
  ECWolf is an evolutionary port of Wolfenstein 3D extending modern 
  widescreen setups, flexible WASD inputs, and advanced ZDoom data scripting features.

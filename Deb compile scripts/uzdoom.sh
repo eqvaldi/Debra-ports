@@ -84,8 +84,9 @@ Version: ${VERSION}
 Section: games
 Priority: optional
 Architecture: ${ARCH}
+Provides: doom-engine
 Maintainer: EQLinux <https://github.com/eqvaldi>
-Depends: libsdl2-2.0-0, libgl1-mesa-glx, libopenal1, libsndfile1, libmpg123-0, libvpx7, zlib1g, libfluidsynth3, libbnet1 | libasound2
+Depends: libsdl2-2.0-0, libgl1, libopenal1, libsndfile1, libmpg123-0, libvpx9, zlib1g, libfluidsynth3, libvulkan1 | libasound2
 Description: UZDoom advanced feature-rich source port based on GZDoom
  UZDoom is a modern continuation of ZDoom and GZDoom adding enhanced 
  high-resolution hardware scripting capabilities, dynamic lighting systems, 

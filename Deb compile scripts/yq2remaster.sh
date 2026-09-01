@@ -79,7 +79,7 @@ Section: games
 Priority: optional
 Architecture: ${ARCH}
 Maintainer: EQLinux <https://github.com/eqvaldi>
-Depends: libsdl2-2.0-0, libgl1-mesa-glx, libopenal1, libcurl4, libvulkan1
+Depends: libsdl2-2.0-0, libgl1, libopenal1, libcurl4, libvulkan1
 Description: Yamagi Quake II engine fork for Q2 Remaster assets
  An experimental fork of Yamagi Quake II featuring modern renderers
  and structural compatibility with Nightdive Studios' Quake II Enhanced.

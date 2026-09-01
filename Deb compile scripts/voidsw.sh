@@ -67,7 +67,7 @@ Section: games
 Priority: optional
 Architecture: ${ARCH}
 Maintainer: EQLinux <https://github.com/eqvaldi>
-Depends: libsdl2-2.0-0, libgl1-mesa-glx, libflac8, libvpx7, libgtk2.0-0
+Depends: libsdl2-2.0-0, libgl1, libvpx9, libgtk-3-0 | libgtk2.0-0
 Description: VoidSW source port engine for Shadow Warrior
  VoidSW is a high-performance source port of the classic 1997 3D Realms 
  title Shadow Warrior, optimized and maintained as part of the EDuke32 project.

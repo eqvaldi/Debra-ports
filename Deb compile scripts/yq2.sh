@@ -77,7 +77,7 @@ Section: games
 Priority: optional
 Architecture: ${ARCH}
 Maintainer: EQLinux <https://github.com/eqvaldi>
-Depends: libsdl2-2.0-0, libgl1-mesa-glx, libopenal1, libcurl4
+Depends: libsdl2-2.0-0, libgl1, libopenal1, libcurl4
 Description: Yamagi Quake II engine source port
  Yamagi Quake II is an enhanced, incredibly stable client port of id 
  Software's classic Quake II, focused on security, stability, and bugs.

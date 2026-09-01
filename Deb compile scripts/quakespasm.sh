@@ -70,7 +70,7 @@ Section: games
 Priority: optional
 Architecture: ${ARCH}
 Maintainer: EQLinux <https://github.com/eqvaldi>
-Depends: libsdl2-2.0-0, libvorbisfile3, libmad0, libogg0
+Depends: libsdl2-2.0-0, libvorbisfile3, libmad0, libogg0, libgl1
 Description: QuakeSpasm engine port for Quake 1
  QuakeSpasm is a modern, cross-platform Quake engine port featuring
  high-fidelity 64-bit support, smooth SDL2 mouse input, and external music.

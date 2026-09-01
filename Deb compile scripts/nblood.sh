@@ -64,7 +64,7 @@ Section: games
 Priority: optional
 Architecture: ${ARCH}
 Maintainer: EQLinux <https://github.com/eqvaldi>
-Depends: libsdl2-2.0-0, libgl1-mesa-glx, libflac8, libvpx7, libgtk2.0-0
+Depends: libsdl2-2.0-0, libgl1, libvpx9, libgtk-3-0 | libgtk2.0-0
 Description: NBlood engine port for One Unit Whole Blood
  NBlood is a spectacular, reverse-engineered source port of the 
  classic 1997 game Blood built using advanced EDuke32 technologies.

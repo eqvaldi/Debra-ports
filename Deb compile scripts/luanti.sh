@@ -92,7 +92,7 @@ Section: games
 Priority: optional
 Architecture: ${ARCH}
 Maintainer: EQLinux <https://github.com/eqvaldi>
-Depends: libirrlicht1.8, libpng16-16, libjpeg62-turbo, zlib1g, libgl1-mesa-glx, libluajit-5.1-2, libcurl4
+Depends: libirrlicht1.8, libpng16-16, libjpeg62-turbo, zlib1g, libgl1, libluajit-5.1-2, libcurl4
 Description: Luanti sandbox engine bundled with backroomtest mod
  Luanti (formerly Minetest) is an infinite-world voxel sandbox 
  framework compiled with local dependencies, minetest_game assets, 
