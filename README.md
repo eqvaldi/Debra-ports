@@ -2,6 +2,7 @@
 A tool to compile Source Ports
 
 # Info
+* The folder named Deb compile scripts is used to compile .deb.
 
 ### Supported Distros
 
