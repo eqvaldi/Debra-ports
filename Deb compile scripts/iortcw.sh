@@ -100,7 +100,7 @@ Section: games
 Priority: optional
 Architecture: ${ARCH}
 Maintainer: EQLinux <https://github.com/eqvaldi>
-Depends: libsdl2-2.0-0, libopenal1, libcurl4, libjpeg62-turbo, libpng16-16
+Depends: libsdl2-2.0-0, libopenal1, libcurl4, libjpeg62-turbo, libpng16-16, libgl1
 Description: iortcw engine port for Return to Castle Wolfenstein
  Merged ioquake3 features and fixes into Return to Castle Wolfenstein (RTCW).
  Includes both full Single Player campaign and Multiplayer engine components.

@@ -68,7 +68,7 @@ Section: games
 Priority: optional
 Architecture: ${ARCH}
 Maintainer: EQLinux <https://github.com/eqvaldi>
-Depends: libsdl2-2.0-0, libsdl2-mixer-2.0-0
+Depends: libsdl2-2.0-0, libsdl2-mixer-2.0-0, libgl1
 Description: Taradino engine port for Rise of the Triad
  Taradino is a modern SDL2 source port of Apogee's classic 1994 
  3D action title Rise of the Triad, bringing modern OS compatibility.
