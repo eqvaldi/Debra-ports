@@ -30,7 +30,7 @@ fi
 # 3. Compile the SDL2 target using all available CPU threads
 echo "-> Compiling QuakeSpasm Engine with $(nproc) threads..."
 make clean
-make USE_SDL2=1 -j$(nproc)
+make USE_SDL2=1 DO_USERDIRS=1 -j$(nproc)
 cd ../.. # Return back to script execution root
 
 # 4. Fetch and handle LibreQuake open-source data files
@@ -70,13 +70,13 @@ else
     exit 1
 fi
 
-# 7. Create the desktop shortcut launcher file dynamically pointing to data root
+# 7. Create the desktop shortcut launcher file dynamically pointing to safe user home paths
 echo "-> Creating desktop shortcut..."
 cat << EOF > "$DIR_NAME/usr/share/applications/quakespasm-librequake.desktop"
 [Desktop Entry]
 Name=LibreQuake (QuakeSpasm)
 Comment=Fully free and open-source retro FPS powered by QuakeSpasm engine
-Exec=/usr/games/quakespasm -basedir /usr/share/games/quakespasm
+Exec=/usr/games/quakespasm -userdir ~/.quakespasm -basedir /usr/share/games/quakespasm
 Terminal=false
 Type=Application
 Icon=applications-games
@@ -99,6 +99,21 @@ Description: LibreQuake standalone game built on QuakeSpasm
  LibreQuake content database maps, textures, and entities.
  Automatically packaged on $(date +%Y-%m-%d).
 EOF
+
+# Generate a pre-removal script to force-clear the system launcher cache
+cat << 'EOF' > "$DIR_NAME/DEBIAN/prerm"
+#!/bin/bash
+set -e
+# Force delete the desktop file if it gets unlinked or orphaned
+rm -f /usr/share/applications/quakespasm-librequake.desktop
+# Update the system menu icon cache
+if [ -x "$(command -v update-desktop-database)" ]; then
+    update-desktop-database -q
+fi
+EOF
+
+# Give the maintainer script proper execution rights (Mandatory for Debian)
+chmod 755 "$DIR_NAME/DEBIAN/prerm"
 
 # 9. Build the final .deb package safely ensuring root ownership
 echo "-> Building the Debian package..."

@@ -42,8 +42,8 @@ mkdir -p "$DIR_NAME/usr/share/applications"
 # 5. Copy the compiled binaries and modular renderer components from the verified release folder
 echo "-> Copying executable targets and library modules from release..."
 if [ -f "$SOURCE_DIR/release/quake2" ]; then
-    # Copy primary client program and dedicated server
-    cp "$SOURCE_DIR/release/quake2" "$DIR_NAME/usr/games/yquake2-remaster"
+    # Copy primary client program to isolated library execution path and dedicated server globally
+    cp "$SOURCE_DIR/release/quake2" "$DIR_NAME/usr/lib/yquake2remaster/yquake2remaster-bin"
     cp "$SOURCE_DIR/release/q2ded" "$DIR_NAME/usr/games/yq2ded-remaster"
     
     # Copy baseline core game engine logic shared object library
@@ -58,7 +58,22 @@ else
     exit 1
 fi
 
-# 6. Create the desktop shortcut launcher file dynamically
+# 6. Create a smart startup script wrapper that handles your home data folder setup safely
+echo "-> Creating application launcher wrapper with isolated storage..."
+cat << 'EOF' > "$DIR_NAME/usr/games/yquake2-remaster"
+#!/bin/bash
+# 1. Ensure the user's custom isolated home folder layout exists
+mkdir -p "$HOME/.yquake2remaster/baseq2"
+
+# 2. Automatically map all system rendering modules into the isolated home folder so the engine finds them
+ln -sf /usr/lib/yquake2remaster/*.so "$HOME/.yquake2remaster/"
+
+# 3. Launch the primary remaster engine binary targeting the isolated home data folder safely
+exec /usr/lib/yquake2remaster/yquake2remaster-bin -datadir "$HOME/.yquake2remaster" "$@"
+EOF
+chmod 755 "$DIR_NAME/usr/games/yquake2-remaster"
+
+# 7. Create the desktop shortcut launcher file dynamically pointing straight to your wrapper tool
 echo "-> Creating desktop shortcut..."
 cat << EOF > "$DIR_NAME/usr/share/applications/yamagiquake2-remaster.desktop"
 [Desktop Entry]
@@ -67,10 +82,11 @@ Comment=Yamagi Quake II fork with Quake II Enhanced/Remaster support
 Exec=/usr/games/yquake2-remaster
 Terminal=false
 Type=Application
+Icon=applications-games
 Categories=Game;ActionGame;
 EOF
 
-# 7. Generate the Debian control file dynamically with the live version stamp
+# 8. Generate the Debian control file dynamically with the live version stamp
 echo "-> Generating metadata control file..."
 cat << EOF > "$DIR_NAME/DEBIAN/control"
 Package: ${PKG_NAME}
@@ -78,6 +94,7 @@ Version: ${VERSION}
 Section: games
 Priority: optional
 Architecture: ${ARCH}
+Provides: doom-engine
 Maintainer: EQLinux <https://github.com/eqvaldi>
 Depends: libsdl2-2.0-0, libgl1, libopenal1, libcurl4, libvulkan1
 Description: Yamagi Quake II engine fork for Q2 Remaster assets
@@ -86,11 +103,11 @@ Description: Yamagi Quake II engine fork for Q2 Remaster assets
  Automatically packaged on $(date +%Y-%m-%d).
 EOF
 
-# 8. Build the final .deb package safely ensuring root ownership
+# 9. Build the final .deb package safely ensuring root ownership
 echo "-> Building the Debian package..."
 dpkg-deb --root-owner-group --build "$DIR_NAME"
 
-# 9. Clean up the staging directory structure
+# 10. Clean up the staging directory structure
 rm -rf "$DIR_NAME"
 
 echo "=== Success! Package built: ${DIR_NAME}.deb ==="

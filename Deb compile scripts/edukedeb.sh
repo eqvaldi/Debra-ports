@@ -35,13 +35,47 @@ echo "-> Creating staging directory structure..."
 rm -rf "$DIR_NAME"
 mkdir -p "$DIR_NAME/DEBIAN"
 mkdir -p "$DIR_NAME/usr/games"
+mkdir -p "$DIR_NAME/usr/lib/eduke32"
 mkdir -p "$DIR_NAME/usr/share/applications"
 
-# 5. Copy the compiled binaries
+# 5. Copy the compiled binaries to an isolated library path
 echo "-> Copying binaries..."
-cp "$SOURCE_DIR/eduke32" "$SOURCE_DIR/mapster32" "$DIR_NAME/usr/games/"
+if [ -f "$SOURCE_DIR/eduke32" ] && [ -f "$SOURCE_DIR/mapster32" ]; then
+    cp "$SOURCE_DIR/eduke32" "$SOURCE_DIR/mapster32" "$DIR_NAME/usr/lib/eduke32/"
+else
+    echo "Error: Compiled engine binaries not found in repository root."
+    exit 1
+fi
 
-# 6. Create the desktop shortcut file dynamically
+# 6. Create smart startup script wrappers that handle your home data folder setup safely
+echo "-> Creating application launcher wrappers with home directory mapping..."
+cat << 'EOF' > "$DIR_NAME/usr/games/eduke32"
+#!/bin/bash
+# 1. Ensure the user's custom home folder layout exists for base game assets and mods
+mkdir -p "$HOME/.eduke32"
+
+# 2. Hop inside your personal directory context so all generated files/saves land safely inside it
+cd "$HOME/.eduke32"
+
+# 3. Launch the primary engine binary context natively 
+exec /usr/lib/eduke32/eduke32 "$@"
+EOF
+chmod 755 "$DIR_NAME/usr/games/eduke32"
+
+cat << 'EOF' > "$DIR_NAME/usr/games/mapster32"
+#!/bin/bash
+# 1. Ensure the user's custom home folder layout exists for base game assets and mods
+mkdir -p "$HOME/.eduke32"
+
+# 2. Hop inside your personal directory context so map creation files land safely inside it
+cd "$HOME/.eduke32"
+
+# 3. Launch the map editor binary context natively 
+exec /usr/lib/eduke32/mapster32 "$@"
+EOF
+chmod 755 "$DIR_NAME/usr/games/mapster32"
+
+# 7. Create the desktop shortcut launcher file dynamically pointing straight to your wrapper tool
 echo "-> Creating desktop shortcut..."
 cat << EOF > "$DIR_NAME/usr/share/applications/eduke32.desktop"
 [Desktop Entry]
@@ -50,10 +84,11 @@ Comment=Duke Nukem 3D Port
 Exec=/usr/games/eduke32
 Terminal=false
 Type=Application
+Icon=applications-games
 Categories=Game;ActionGame;
 EOF
 
-# 7. Generate the Debian control file dynamically
+# 8. Generate the Debian control file dynamically
 echo "-> Generating metadata control file..."
 cat << EOF > "$DIR_NAME/DEBIAN/control"
 Package: ${PKG_NAME}
@@ -68,11 +103,12 @@ Description: EDuke32 engine port for Duke Nukem 3D
  Realms game Duke Nukem 3D. Automatically packaged on $(date +%Y-%m-%d).
 EOF
 
-# 8. Build the final .deb package
+# 9. Build the final .deb package safely ensuring root ownership
 echo "-> Building the Debian package..."
 dpkg-deb --root-owner-group --build "$DIR_NAME"
 
-# 9. Clean up the staging directory structure (keeps the completed package)
+# 10. Clean up the staging directory structure
 rm -rf "$DIR_NAME"
 
 echo "=== Success! Package built: ${DIR_NAME}.deb ==="
+

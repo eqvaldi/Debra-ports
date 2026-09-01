@@ -35,19 +35,35 @@ cd .. # Return back to script execution root
 echo "-> Creating staging directory structure..."
 rm -rf "$DIR_NAME"
 mkdir -p "$DIR_NAME/DEBIAN"
+mkdir -p "$DIR_NAME/usr/lib/taradino"
 mkdir -p "$DIR_NAME/usr/games"
 mkdir -p "$DIR_NAME/usr/share/applications"
 
-# 5. Copy the compiled binary into staging
+# 5. Copy the compiled binary into staging execution folder tree
 echo "-> Copying executable targets..."
 if [ -f "$SOURCE_DIR/taradino" ]; then
-    cp "$SOURCE_DIR/taradino" "$DIR_NAME/usr/games/"
+    cp "$SOURCE_DIR/taradino" "$DIR_NAME/usr/lib/taradino/taradino-bin"
 else
     echo "Error: Compiled binary 'taradino' not found in source directory."
     exit 1
 fi
 
-# 6. Create the desktop shortcut launcher file dynamically
+# 6. Create a smart startup script wrapper that handles your home data folder setup safely
+echo "-> Creating application launcher wrapper with home directory mapping..."
+cat << 'EOF' > "$DIR_NAME/usr/games/taradino"
+#!/bin/bash
+# 1. Ensure the user's custom home folder exists
+mkdir -p "$HOME/.taradino"
+
+# 2. Hop inside your personal directory context so all generated files/saves land safely inside it
+cd "$HOME/.taradino"
+
+# 3. Launch the primary engine binary context natively 
+exec /usr/lib/taradino/taradino-bin "$@"
+EOF
+chmod 755 "$DIR_NAME/usr/games/taradino"
+
+# 7. Create the desktop shortcut launcher file dynamically pointing straight to your wrapper tool
 echo "-> Creating desktop shortcut..."
 cat << EOF > "$DIR_NAME/usr/share/applications/taradino.desktop"
 [Desktop Entry]
@@ -56,10 +72,11 @@ Comment=SDL2 port of Rise of the Triad
 Exec=/usr/games/taradino
 Terminal=false
 Type=Application
+Icon=applications-games
 Categories=Game;ActionGame;
 EOF
 
-# 7. Generate the Debian control file dynamically
+# 8. Generate the Debian control file dynamically with modern tags
 echo "-> Generating metadata control file..."
 cat << EOF > "$DIR_NAME/DEBIAN/control"
 Package: ${PKG_NAME}
@@ -67,6 +84,7 @@ Version: ${VERSION}
 Section: games
 Priority: optional
 Architecture: ${ARCH}
+Provides: doom-engine
 Maintainer: EQLinux <https://github.com/eqvaldi>
 Depends: libsdl2-2.0-0, libsdl2-mixer-2.0-0, libgl1
 Description: Taradino engine port for Rise of the Triad
@@ -75,11 +93,11 @@ Description: Taradino engine port for Rise of the Triad
  Automatically packaged on $(date +%Y-%m-%d).
 EOF
 
-# 8. Build the final .deb package safely ensuring root ownership
+# 9. Build the final .deb package safely ensuring root ownership
 echo "-> Building the Debian package..."
 dpkg-deb --root-owner-group --build "$DIR_NAME"
 
-# 9. Clean up the staging directory structure
+# 10. Clean up the staging directory structure
 rm -rf "$DIR_NAME"
 
 echo "=== Success! Package built: ${DIR_NAME}.deb ==="

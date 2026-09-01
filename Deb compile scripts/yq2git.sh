@@ -41,8 +41,8 @@ mkdir -p "$DIR_NAME/usr/share/applications"
 # 5. Copy the compiled application binaries and internal shared objects from release
 echo "-> Copying executable targets and library mods from release..."
 if [ -f "$SOURCE_DIR/release/quake2" ]; then
-    # Copy primary client program and dedicated server
-    cp "$SOURCE_DIR/release/quake2" "$DIR_NAME/usr/games/yquake2"
+    # Copy primary client program to isolated library execution path and dedicated server globally
+    cp "$SOURCE_DIR/release/quake2" "$DIR_NAME/usr/lib/yquake2/yquake2-bin"
     cp "$SOURCE_DIR/release/q2ded" "$DIR_NAME/usr/games/yq2ded"
     
     # Copy Yamagi engine baseline shared libraries (.so modules) into library stack
@@ -55,7 +55,22 @@ else
     exit 1
 fi
 
-# 6. Create the desktop shortcut launcher file dynamically
+# 6. Create a smart startup script wrapper that handles your home data folder setup safely
+echo "-> Creating application launcher wrapper..."
+cat << 'EOF' > "$DIR_NAME/usr/games/yquake2"
+#!/bin/bash
+# 1. Ensure the user's custom home folder layout exists
+mkdir -p "$HOME/.yquake2/baseq2"
+
+# 2. Automatically map all system rendering modules into the user's home folder so the engine finds them
+ln -sf /usr/lib/yquake2/*.so "$HOME/.yquake2/"
+
+# 3. Launch the primary engine binary targeting the user's home data folder safely
+exec /usr/lib/yquake2/yquake2-bin -datadir "$HOME/.yquake2" "$@"
+EOF
+chmod 755 "$DIR_NAME/usr/games/yquake2"
+
+# 7. Create the desktop shortcut launcher file dynamically pointing straight to your wrapper tool
 echo "-> Creating desktop shortcut..."
 cat << EOF > "$DIR_NAME/usr/share/applications/yamagiquake2.desktop"
 [Desktop Entry]
@@ -64,10 +79,11 @@ Comment=Modern enhanced source port of Quake II - Development Build
 Exec=/usr/games/yquake2
 Terminal=false
 Type=Application
+Icon=applications-games
 Categories=Game;ActionGame;
 EOF
 
-# 7. Generate the Debian control file dynamically with the live version stamp
+# 8. Generate the Debian control file dynamically with the live version stamp
 echo "-> Generating metadata control file..."
 cat << EOF > "$DIR_NAME/DEBIAN/control"
 Package: ${PKG_NAME}
@@ -83,11 +99,11 @@ Description: Yamagi Quake II engine source port (Development Build)
  Automatically packaged on $(date +%Y-%m-%d).
 EOF
 
-# 8. Build the final .deb package safely ensuring root ownership
+# 9. Build the final .deb package safely ensuring root ownership
 echo "-> Building the Debian package..."
 dpkg-deb --root-owner-group --build "$DIR_NAME"
 
-# 9. Clean up the staging directory structure
+# 10. Clean up the staging directory structure
 rm -rf "$DIR_NAME"
 
 echo "=== Success! Package built: ${DIR_NAME}.deb ==="

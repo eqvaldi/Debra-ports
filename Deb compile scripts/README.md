@@ -22,7 +22,6 @@ sudo apt install build-essential cmake git ninja-build nasm wget unzip xz-utils 
 
 ### How to Start compiling deb install files on Linux.
 ```
-chmod +x *.sh
 bash ./.sh file name here
 ```
 

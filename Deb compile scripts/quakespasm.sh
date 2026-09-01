@@ -19,16 +19,16 @@ if [ ! -d "$SOURCE_DIR" ]; then
     git clone "$REPO_URL" "$SOURCE_DIR"
     cd "$SOURCE_DIR/Quake"
 else
-    echo "-> Repository already exists. Pulling latest updates..."
+    echo "-> Repository directory exists. Pulling latest updates..."
     cd "$SOURCE_DIR"
     git pull
     cd Quake
 fi
 
-# 3. Compile the SDL2 target using all available CPU threads
+# 3. Compile the SDL2 target with User Directory routing baked in
 echo "-> Compiling QuakeSpasm Engine with $(nproc) threads..."
 make clean
-make USE_SDL2=1 -j$(nproc)
+make USE_SDL2=1 DO_USERDIRS=1 -j$(nproc)
 cd ../.. # Return back to script execution root
 
 # 4. Create the clean staging directory structure
@@ -49,19 +49,20 @@ else
     exit 1
 fi
 
-# 6. Create the desktop shortcut launcher file dynamically
+# 6. Create the desktop shortcut forcing matching spelling path expansion
 echo "-> Creating desktop shortcut..."
 cat << EOF > "$DIR_NAME/usr/share/applications/quakespasm.desktop"
 [Desktop Entry]
 Name=QuakeSpasm
 Comment=Modern engine port of Quake 1 based on FitzQuake
-Exec=/usr/games/quakespasm
+Exec=bash -c "/usr/games/quakespasm -userdir \$HOME/.quakespasm -basedir \$HOME/.quakespasm"
 Terminal=false
 Type=Application
+Icon=applications-games
 Categories=Game;ActionGame;
 EOF
 
-# 7. Generate the Debian control file dynamically
+# 7. Generate the Debian control file dynamically with the universal libgl1 tag
 echo "-> Generating metadata control file..."
 cat << EOF > "$DIR_NAME/DEBIAN/control"
 Package: ${PKG_NAME}
@@ -70,7 +71,7 @@ Section: games
 Priority: optional
 Architecture: ${ARCH}
 Maintainer: EQLinux <https://github.com/eqvaldi>
-Depends: libsdl2-2.0-0, libvorbisfile3, libmad0, libogg0, libgl1
+Depends: libsdl2-2.0-0, libgl1, libvorbisfile3, libmad0, libogg0
 Description: QuakeSpasm engine port for Quake 1
  QuakeSpasm is a modern, cross-platform Quake engine port featuring
  high-fidelity 64-bit support, smooth SDL2 mouse input, and external music.

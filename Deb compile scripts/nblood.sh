@@ -35,15 +35,38 @@ echo "-> Creating staging directory structure..."
 rm -rf "$DIR_NAME"
 mkdir -p "$DIR_NAME/DEBIAN"
 mkdir -p "$DIR_NAME/usr/games"
-mkdir -p "$DIR_NAME/usr/share/games/nblood"
+mkdir -p "$DIR_NAME/usr/lib/nblood"
 mkdir -p "$DIR_NAME/usr/share/applications"
 
-# 5. Copy the compiled binaries and engine asset data files
+# 5. Copy the compiled binaries and engine asset data files into staging library paths
 echo "-> Copying executable binaries and .pk3 support definitions..."
-cp "$SOURCE_DIR/nblood" "$DIR_NAME/usr/games/"
-cp "$SOURCE_DIR/nblood.pk3" "$DIR_NAME/usr/share/games/nblood/"
+if [ -f "$SOURCE_DIR/nblood" ] && [ -f "$SOURCE_DIR/nblood.pk3" ]; then
+    cp "$SOURCE_DIR/nblood" "$DIR_NAME/usr/lib/nblood/"
+    cp "$SOURCE_DIR/nblood.pk3" "$DIR_NAME/usr/lib/nblood/"
+else
+    echo "Error: Compiled engine binary or nblood.pk3 resource asset not detected in root."
+    exit 1
+fi
 
-# 6. Create the desktop shortcut launcher file dynamically
+# 6. Create a smart startup script wrapper that handles your home data folder setup safely
+echo "-> Creating application launcher wrapper with home directory mapping..."
+cat << 'EOF' > "$DIR_NAME/usr/games/nblood"
+#!/bin/bash
+# 1. Ensure the user's custom home folder layout exists for base game assets and mods
+mkdir -p "$HOME/.nblood"
+
+# 2. Automatically link the required engine .pk3 resource asset directly into your home folder context
+ln -sf /usr/lib/nblood/nblood.pk3 "$HOME/.nblood/nblood.pk3"
+
+# 3. Hop inside your personal directory context so all generated files/saves land safely inside it
+cd "$HOME/.nblood"
+
+# 4. Launch the primary engine binary context natively 
+exec /usr/lib/nblood/nblood "$@"
+EOF
+chmod 755 "$DIR_NAME/usr/games/nblood"
+
+# 7. Create the desktop shortcut launcher file dynamically pointing straight to your wrapper tool
 echo "-> Creating desktop shortcut..."
 cat << EOF > "$DIR_NAME/usr/share/applications/nblood.desktop"
 [Desktop Entry]
@@ -52,10 +75,11 @@ Comment=Blood Source Port (Build Engine)
 Exec=/usr/games/nblood
 Terminal=false
 Type=Application
+Icon=applications-games
 Categories=Game;ActionGame;
 EOF
 
-# 7. Generate the Debian control file dynamically
+# 8. Generate the Debian control file dynamically with the live version stamp
 echo "-> Generating metadata control file..."
 cat << EOF > "$DIR_NAME/DEBIAN/control"
 Package: ${PKG_NAME}
@@ -63,6 +87,7 @@ Version: ${VERSION}
 Section: games
 Priority: optional
 Architecture: ${ARCH}
+Provides: doom-engine
 Maintainer: EQLinux <https://github.com/eqvaldi>
 Depends: libsdl2-2.0-0, libgl1, libvpx9, libgtk-3-0 | libgtk2.0-0
 Description: NBlood engine port for One Unit Whole Blood
@@ -71,11 +96,12 @@ Description: NBlood engine port for One Unit Whole Blood
  Automatically packaged on $(date +%Y-%m-%d).
 EOF
 
-# 8. Build the final .deb package safely ensuring root ownership
+# 9. Build the final .deb package safely ensuring root ownership
 echo "-> Building the Debian package..."
 dpkg-deb --root-owner-group --build "$DIR_NAME"
 
-# 9. Clean up the staging directory structure
+# 10. Clean up the staging directory structure
 rm -rf "$DIR_NAME"
 
 echo "=== Success! Package built: ${DIR_NAME}.deb ==="
+
