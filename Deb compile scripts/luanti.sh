@@ -106,7 +106,7 @@ Version: ${VERSION}
 Section: games
 Priority: optional
 Architecture: ${ARCH}
-Provides: doom-engine
+License: LGPL-2.1-or-later
 Maintainer: EQLinux <https://github.com/eqvaldi>
 Depends: libpng16-16, libjpeg62-turbo, zlib1g, libgl1, libluajit-5.1-2, libcurl4, libopenal1, libvorbisfile3
 Description: Luanti sandbox engine bundled with backroomtest mod

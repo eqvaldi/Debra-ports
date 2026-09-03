@@ -70,6 +70,7 @@ Version: ${VERSION}
 Section: games
 Priority: optional
 Architecture: ${ARCH}
+License: GPL-2.0-or-later
 Maintainer: EQLinux <https://github.com/eqvaldi>
 Depends: libsdl2-2.0-0, libgl1, libvorbisfile3, libmad0, libogg0
 Description: QuakeSpasm engine port for Quake 1

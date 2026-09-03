@@ -90,7 +90,7 @@ Version: ${VERSION}
 Section: games
 Priority: optional
 Architecture: ${ARCH}
-Provides: doom-engine
+License: GPL-3.0-or-later
 Maintainer: EQLinux <https://github.com/eqvaldi>
 Depends: libsdl2-2.0-0, libopenal1, libcurl4, libgl1
 Description: dhewm3 engine port for Doom 3

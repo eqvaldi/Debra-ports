@@ -86,7 +86,7 @@ Version: ${VERSION}
 Section: games
 Priority: optional
 Architecture: ${ARCH}
-Provides: doom-engine
+License: GPL-2.0-or-later AND Doom-Source-License
 Maintainer: EQLinux <https://github.com/eqvaldi>
 Depends: libsdl2-2.0-0, libsdl2-net-2.0-0, libjpeg62-turbo, libpng16-16, zlib1g, libgl1
 Description: ECWolf advanced engine port for Wolfenstein 3D

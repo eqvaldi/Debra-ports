@@ -92,6 +92,7 @@ Version: ${VERSION}
 Section: games
 Priority: optional
 Architecture: ${ARCH}
+License: GPL-2.0
 Maintainer: EQLinux <https://github.com/eqvaldi>
 Depends: libsdl2-2.0-0, libgl1, libopenal1, libcurl4
 Description: Yamagi Quake II engine source port

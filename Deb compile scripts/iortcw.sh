@@ -134,7 +134,7 @@ Version: ${VERSION}
 Section: games
 Priority: optional
 Architecture: ${ARCH}
-Provides: doom-engine
+License: GPL-2.0-or-later
 Maintainer: EQLinux <https://github.com/eqvaldi>
 Depends: libsdl2-2.0-0, libopenal1, libcurl4, libjpeg62-turbo, libpng16-16, libgl1
 Description: iortcw engine port for Return to Castle Wolfenstein

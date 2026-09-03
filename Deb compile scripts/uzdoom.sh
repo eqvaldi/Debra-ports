@@ -85,6 +85,7 @@ Section: games
 Priority: optional
 Architecture: ${ARCH}
 Provides: doom-engine
+License: GPL-3.0-or-later
 Maintainer: EQLinux <https://github.com/eqvaldi>
 Depends: libsdl2-2.0-0, libgl1, libopenal1, libsndfile1, libmpg123-0, libvpx9, zlib1g, libfluidsynth3, libvulkan1
 Description: UZDoom advanced feature-rich source port based on GZDoom

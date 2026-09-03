@@ -84,7 +84,7 @@ Version: ${VERSION}
 Section: games
 Priority: optional
 Architecture: ${ARCH}
-Provides: doom-engine
+License: GPL-2.0-or-later
 Maintainer: EQLinux <https://github.com/eqvaldi>
 Depends: libsdl2-2.0-0, libsdl2-mixer-2.0-0, libgl1
 Description: Taradino engine port for Rise of the Triad
