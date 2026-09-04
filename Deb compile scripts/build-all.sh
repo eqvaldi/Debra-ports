@@ -9,6 +9,7 @@
 ./ioquke3.sh
 ./nblood.sh
 ./uzdoom.sh
+./uzdoomgit.sh
 ./yq2.sh
 ./dsda-doom.sh
 ./iortcw.sh

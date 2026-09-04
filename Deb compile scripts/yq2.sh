@@ -3,15 +3,20 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
-# 1. Define variables and baked release version
+# 1. DYNAMIC ARCHITECTURE & MULTIARCH SYSTEM TRIPLET DETECTION
+# Automatically extracts standard Debian tokens (e.g., amd64, arm64, i386)
+ARCH=$(dpkg-architecture -qDEB_HOST_ARCH)
+
+# Automatically extracts system library folder triplets (e.g., x86_64-linux-gnu, aarch64-linux-gnu)
+TRIPLET=$(dpkg-architecture -qDEB_HOST_MULTIARCH)
+
 VERSION="8.70"
-ARCH="amd64"
 PKG_NAME="yamagiquake2"
 DIR_NAME="${PKG_NAME}_${VERSION}_${ARCH}"
 ZIP_URL="https://github.com/yquake2/yquake2/archive/refs/tags/QUAKE2_8_70.zip"
 SOURCE_DIR="yquake2-QUAKE2_8_70"
 
-echo "=== Starting packaging process for ${PKG_NAME} version ${VERSION} ==="
+echo "=== Starting packaging process for ${PKG_NAME} on Architecture: ${ARCH} (Triplet: ${TRIPLET}) ==="
 
 # 2. Fetch and prepare the explicit version archive source tree from GitHub
 if [ ! -d "$SOURCE_DIR" ]; then
@@ -31,43 +36,49 @@ make clean
 make -j$(nproc)
 cd .. # Return back to script execution root
 
-# 4. Create the clean staging directory structure
+# 4. Create the clean staging directory structure targeting Multiarch pathways
 echo "-> Creating staging directory structure..."
 rm -rf "$DIR_NAME"
 mkdir -p "$DIR_NAME/DEBIAN"
 mkdir -p "$DIR_NAME/usr/games"
-mkdir -p "$DIR_NAME/usr/lib/yquake2/baseq2"
+mkdir -p "$DIR_NAME/usr/lib/${TRIPLET}/yquake2/baseq2"
 mkdir -p "$DIR_NAME/usr/share/applications"
 
-# 5. Copy the compiled application binaries and internal base mechanics libraries
+# 5. Copy the compiled application binaries and internal base mechanics libraries into staging
 echo "-> Copying executable targets and library mods from release..."
 if [ -f "$SOURCE_DIR/release/quake2" ]; then
-    # Copy primary client program and dedicated server to the secure system path
-    cp "$SOURCE_DIR/release/quake2" "$DIR_NAME/usr/lib/yquake2/yquake2-bin"
-    cp "$SOURCE_DIR/release/q2ded" "$DIR_NAME/usr/games/yq2ded"
+    # Copy primary client program and dedicated server to the multiarch system path
+    cp "$SOURCE_DIR/release/quake2" "$DIR_NAME/usr/lib/${TRIPLET}/yquake2/yquake2-bin"
     
-    # Copy Yamagi engine baseline shared libraries (.so modules) into library stack
-    cp "$SOURCE_DIR/release/baseq2/game.so" "$DIR_NAME/usr/lib/yquake2/baseq2/"
+    # Isolate dedicated server binary into triplet and link globally
+    cp "$SOURCE_DIR/release/q2ded" "$DIR_NAME/usr/lib/${TRIPLET}/yquake2/q2ded-bin"
+    ln -s /usr/lib/${TRIPLET}/yquake2/q2ded-bin "$DIR_NAME/usr/games/yq2ded"
+    
+    # Copy Yamagi engine baseline shared libraries (.so modules) into triplet structure
+    cp "$SOURCE_DIR/release/baseq2/game.so" "$DIR_NAME/usr/lib/${TRIPLET}/yquake2/baseq2/"
     
     # Copy renderer and utility shared libraries from the root of release folder
-    cp "$SOURCE_DIR"/release/*.so "$DIR_NAME/usr/lib/yquake2/" 2>/dev/null || true
+    cp "$SOURCE_DIR"/release/*.so "$DIR_NAME/usr/lib/${TRIPLET}/yquake2/" 2>/dev/null || true
 else
     echo "Error: Compiled engine binaries not detected in expected layout ($SOURCE_DIR/release)."
     exit 1
 fi
 
-# 6. Create a smart startup script wrapper that handles your home data folder setup safely
+# 6. Create a smart multiarch startup script wrapper that handles your home data folder setup safely
 echo "-> Creating application launcher wrapper..."
 cat << 'EOF' > "$DIR_NAME/usr/games/yquake2"
 #!/bin/bash
 # 1. Ensure the user's custom home folder layout exists
 mkdir -p "$HOME/.yquake2/baseq2"
 
-# 2. Automatically map all system rendering modules into the user's home folder so the engine finds them
-ln -sf /usr/lib/yquake2/*.so "$HOME/.yquake2/"
+# 2. Dynamically determine the machine's active multiarch triplet path at runtime
+TRIPLET=$(dpkg-architecture -qDEB_HOST_MULTIARCH)
 
-# 3. Launch the primary engine binary targeting the user's home data folder safely
-exec /usr/lib/yquake2/yquake2-bin -datadir "$HOME/.yquake2" "$@"
+# 3. Automatically map all architecture-specific system rendering modules into the user's home folder
+ln -sf /usr/lib/${TRIPLET}/yquake2/*.so "$HOME/.yquake2/"
+
+# 4. Launch the primary engine binary targeting the user's home data folder safely
+exec /usr/lib/${TRIPLET}/yquake2/yquake2-bin -datadir "$HOME/.yquake2" "$@"
 EOF
 chmod 755 "$DIR_NAME/usr/games/yquake2"
 
@@ -84,7 +95,7 @@ Icon=applications-games
 Categories=Game;ActionGame;
 EOF
 
-# 8. Generate the Debian control file dynamically with the baked-in version
+# 8. Generate the Debian control file dynamically with the version, architecture, and Multi-Arch fields
 echo "-> Generating metadata control file..."
 cat << EOF > "$DIR_NAME/DEBIAN/control"
 Package: ${PKG_NAME}
@@ -92,20 +103,43 @@ Version: ${VERSION}
 Section: games
 Priority: optional
 Architecture: ${ARCH}
-License: GPL-2.0
+Multi-Arch: same
+License: GPL-2.0-or-later
 Maintainer: EQLinux <https://github.com/eqvaldi>
 Depends: libsdl2-2.0-0, libgl1, libopenal1, libcurl4
-Description: Yamagi Quake II engine source port
+Description: Yamagi Quake II engine source port (Multiarch Build)
  Yamagi Quake II is an enhanced, incredibly stable client port of id 
  Software's classic Quake II, focused on security, stability, and bugs.
+ Automatically detected, compiled, and packaged for ${ARCH} architectures.
  Automatically packaged on $(date +%Y-%m-%d).
 EOF
 
-# 9. Build the final .deb package safely ensuring root ownership
+# 9. Generate the official system copyright metadata file tracking the GPLv2 license precisely
+echo "-> Generating system copyright tracking documentation..."
+mkdir -p "$DIR_NAME/usr/share/doc/${PKG_NAME}"
+cat << EOF > "$DIR_NAME/usr/share/doc/${PKG_NAME}/copyright"
+Format: https://debian.org
+Upstream-Name: yamagiquake2
+Source: ${REPO_URL}
+
+Files: *
+Copyright: 1997-2001 id Software, Inc.
+           2006-2026 Fabian Greffrath and the Yamagi Quake II contributors
+License: GPL-2.0-or-later
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; version 2 of the License.
+ .
+ On Debian systems, the complete text of the GNU General Public
+ License version 2 can be found in "/usr/share/common-licenses/GPL-2".
+EOF
+
+# 10. Build the final .deb package safely ensuring root ownership
 echo "-> Building the Debian package..."
 dpkg-deb --root-owner-group --build "$DIR_NAME"
 
-# 10. Clean up the staging directory structure
+# 11. Clean up the staging directory structure
 rm -rf "$DIR_NAME"
 
 echo "=== Success! Package built: ${DIR_NAME}.deb ==="
+
