@@ -19,3 +19,4 @@
 ./kenbuild.sh
 ./yq2git.sh
 ./QS-Librequake.sh
+./doombfg.sh

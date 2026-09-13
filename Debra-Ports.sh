@@ -24,6 +24,7 @@ mkdir ./DSDA
 mkdir ./UZDoom
 mkdir ./VoidSW
 mkdir ./Ken-Build
+mkdir ./Doom3BFG
 cd ..
 cd ./.TEMP
 
@@ -31,8 +32,8 @@ cd ./.TEMP
 
 cmd=(dialog --keep-tite --menu "Select a Port:" 22 76 16)
 
-options=(1 "Dhewm3"
-         2 "Eduke32"
+options=(1 "Dhewm3 (Doom 3)"
+         2 "Eduke32 Duke Nukem 3D,Ion fury and Aftershock"
          3 "NBlood (Blood)"
          4 "Darkplaces (quake 1)"
          5 "QuakeSpasm (quake 1,Librequake)"
@@ -48,7 +49,8 @@ options=(1 "Dhewm3"
 	 15 "UZDoom (Doom,Heretic,Hexen)"
 	 16 "VoidSW (Shadow Warrior classic redux)"
 	 17 "EKen-Build (Ken Silverman's Build Engine Demo)"
-	 18 "SeriousSamClassic TFE/TSE")
+	 18 "SeriousSamClassic TFE/TSE"
+	 19 "chocolate doom3 bfg (Doom 3 BFG Edition)")
 
 choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 
@@ -284,6 +286,16 @@ do
           mv ./.TEMP/SeriousSamClassic/SamT* ./Bin
           bash ./Debra-Ports.sh
             ;;
-
+        19)
+	  git clone https://github.com/klaussilveira/chocolate-doom3-bfg.git
+	  cd chocolate-doom3-bfg
+	  cmake -B build
+	  cmake --build build -j$(nproc)
+	  cd ..
+	  cd ..
+	  cp -r ./.TEMP/chocolate-doom3-bfg/build/* ./Bin/Doom3BFG
+          bash ./Debra-Ports.sh
+            ;;
+            
     esac
 done
