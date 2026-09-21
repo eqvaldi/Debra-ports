@@ -55,6 +55,10 @@ else
     exit 1
 fi
 
+# FIXED: Copy the internal base directory assets from the repository into system staging AFTER the build
+echo "-> Copying internal base mechanics resources into the package layout..."
+cp -r "$SOURCE_DIR/base" "$DIR_NAME/usr/lib/${TRIPLET}/chocolate-doom3-bfg/"
+
 # 6. Create a smart multiarch startup script wrapper that handles home data folder setup safely
 echo "-> Creating application launcher wrapper with home directory mapping..."
 cat << 'EOF' > "$DIR_NAME/usr/games/chocolate-doom3-bfg"
@@ -65,10 +69,15 @@ mkdir -p "$HOME/.chocolate-doom3-bfg/base"
 # 2. Dynamically determine the machine's active multiarch triplet path at runtime
 TRIPLET=$(dpkg-architecture -qDEB_HOST_MULTIARCH)
 
-# 3. Hop inside your personal directory context so all generated files land safely inside it
+# 3. Automatically symlink the package's internal engine base files right into the user home context
+if [ -d "/usr/lib/${TRIPLET}/chocolate-doom3-bfg/base" ]; then
+    ln -sf /usr/lib/${TRIPLET}/chocolate-doom3-bfg/base/* "$HOME/.chocolate-doom3-bfg/base/" 2>/dev/null || true
+fi
+
+# 4. Hop inside your personal directory context so all generated files land safely inside it
 cd "$HOME/.chocolate-doom3-bfg"
 
-# 4. Launch the primary engine binary context natively passing down parameters
+# 5. Launch the primary engine binary context natively passing down parameters
 exec /usr/lib/${TRIPLET}/chocolate-doom3-bfg/chocolate-doom3-bfg-bin "$@"
 EOF
 chmod 755 "$DIR_NAME/usr/games/chocolate-doom3-bfg"
@@ -122,7 +131,7 @@ Copyright: 2004-2012 id Software, Inc.
 License: GPL-3.0-only
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
+ the Free Software Foundation; version 3 of the License, or
  (at your option) any later version.
  .
  On Debian systems, the complete text of the GNU General Public
@@ -137,4 +146,3 @@ dpkg-deb --root-owner-group --build "$DIR_NAME"
 rm -rf "$DIR_NAME"
 
 echo "=== Success! Package built: ${DIR_NAME}.deb ==="
-

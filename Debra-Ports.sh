@@ -291,6 +291,7 @@ do
 	  cd chocolate-doom3-bfg
 	  cmake -B build
 	  cmake --build build -j$(nproc)
+	  cp -r ./base ./build
 	  cd ..
 	  cd ..
 	  cp -r ./.TEMP/chocolate-doom3-bfg/build/* ./Bin/Doom3BFG
